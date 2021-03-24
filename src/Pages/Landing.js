@@ -19,7 +19,7 @@ const useStyles = makeStyles({
     flex: "1 1 auto",
   },
   welcomeLine: {
-    fontSize: "20px",
+    fontSize: "39px",
     textAlign: "left",
     marginBottom: "20px",
     fontWeight: "bold",
@@ -32,17 +32,17 @@ const useStyles = makeStyles({
     fontWeight: "bold",
   },
   smallText: {
-    fontSize: "10px",
+    fontSize: "16px",
     textAlign: "center",
   },
   computeLine: {
-    fontSize: "50px",
+    fontSize: "80px",
     textAlign: "left",
-    color: "rgb(57, 230, 149)",
+    color: "rgb(21, 204, 110)",
     fontWeight: "bold",
   },
   decideLine: {
-    fontSize: "45px",
+    fontSize: "80px",
     textAlign: "left",
     fontWeight: "bold",
     marginBottom: "70px",
@@ -55,11 +55,14 @@ const useStyles = makeStyles({
     color: "rgb(0,0,0,0.7)",
   },
   buttonStyle: {
-    backgroundColor: "rgb(58, 214, 142)",
+    backgroundColor: "rgb(21, 204, 110)",
     color: "white",
     marginLeft: "0px",
+    height: "64px",
+    width: "223px",
+    fontSize:'20px',
     "&:hover": {
-      backgroundColor: "rgb(58, 214, 142)",
+      backgroundColor: "rgb(21, 204, 110)",
       color: "white",
     },
   },
@@ -138,7 +141,7 @@ const Landing = () => {
             <img
               src={LandingImage}
               alt="big"
-              width="90%"
+              width="100%"
               className="image"
             ></img>
           </div>

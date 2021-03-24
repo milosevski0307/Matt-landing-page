@@ -44,4 +44,5 @@
 .text-area{
   z-index: 100;
   white-space: nowrap;
+  position: absolute;
 }

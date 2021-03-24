@@ -12,7 +12,7 @@ import {
   Fab,
   Link
 } from "@material-ui/core";
-import Discord from "../assets/discord.png"
+import { ReactComponent as Discord } from "../assets/icons8-discord.svg"
 import { Twitter, YouTube } from "@material-ui/icons";
 const navLinks = [
   { title: `Home`, path: `/home` },
@@ -107,6 +107,11 @@ const useStyles = makeStyles({
     width: "80px",
     height: "80px",
   },
+  discordStyle:{
+    "&:hover": {
+      fill:'white'
+    },
+  }
 });
 
 
@@ -154,7 +159,7 @@ const Header = () => {
           <Twitter />
         </Fab>
         <Fab color="primary" aria-label="add" className={classes.appleStyle}>
-          <img src={Discord} alt="discord"></img>
+          <Discord  className={classes.discordStyle} width="50%" fill="white" />
         </Fab>
       </Toolbar>
     </AppBar>
