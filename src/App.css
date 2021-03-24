@@ -38,11 +38,15 @@
 }
 
 .image{
-  margin-top: -100px;
-  float: right;
+  margin-top: 0px;
+  float: left;
+  z-index: -1;
 }
 .text-area{
   z-index: 100;
-  white-space: nowrap;
   position: absolute;
+  margin-top:140px
+}
+.header{
+  z-index: 500;
 }

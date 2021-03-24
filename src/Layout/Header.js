@@ -10,9 +10,10 @@ import {
   ListItemText,
   makeStyles,
   Fab,
-  Link
+  Link,
 } from "@material-ui/core";
-import { ReactComponent as Discord } from "../assets/icons8-discord.svg"
+import Discord from "../assets/discord.png";
+import WhiteDiscord from "../assets/whiteDiscord.png";
 import { Twitter, YouTube } from "@material-ui/icons";
 const navLinks = [
   { title: `Home`, path: `/home` },
@@ -32,18 +33,19 @@ const useStyles = makeStyles({
     height: "90px",
     display: "flex",
     justifyContent: "center",
+    zIndex: "9999 !important",
   },
   toolBar: {
     display: "flex",
     width: "100%",
     flexFlow: "row",
+    zIndex: "9999",
   },
   spacer: {
     flex: "1 1 auto",
   },
   linkText: {
     textDecoration: `none !important`,
-    // textTransform: `uppercase`,
     color: `#222222`,
     marginLeft: "40px",
     textAlign: "center",
@@ -101,27 +103,34 @@ const useStyles = makeStyles({
     width: "85%",
     borderTop: "4px solid rgb(0, 214, 125)",
     position: "absolute",
-    top:'66px'
+    top: "66px",
   },
   logo: {
     width: "80px",
     height: "80px",
   },
-  discordStyle:{
+  discordStyle: {
+    width: "50%",
     "&:hover": {
-      fill:'white'
+      filter: "sepia(100%) grayscale(100%)",
     },
-  }
+  },
 });
-
 
 const Header = () => {
   const [count, setCount] = useState(0);
+  const [discordBtn, setDiscordBtn] = React.useState(true);
   const classes = useStyles();
-  const linkClick=(index)=>{
-    setCount(index)
+  const linkClick = (index) => {
+    setCount(index);
     console.log(count);
-  }
+  };
+  const handleMouseEnter = () => {
+    setDiscordBtn(false);
+  };
+  const handleMouseLeave = () => {
+    setDiscordBtn(true);
+  };
   return (
     <AppBar position="static" className={classes.appBar}>
       <Toolbar className={classes.toolBar}>
@@ -140,26 +149,28 @@ const Header = () => {
               className={classes.linkText}
               onClick={() => linkClick(index)}
             >
-              <ListItem className={classes.linkText}>
-                <ListItemText primary={title} ></ListItemText>
-                {count===index&&<span className={classes.underLine}></span>}
+              <ListItem className={classes.linkText} button>
+                <ListItemText primary={title}></ListItemText>
+                {count === index && <span className={classes.underLine}></span>}
               </ListItem>
             </Link>
           ))}
         </List>
         <div className={classes.spacer}></div>
-        <Fab
-          color="primary"
-          aria-label="add"
-          className={classes.youTubeStyle}
-        >
+        <Fab color="primary" aria-label="add" className={classes.youTubeStyle}>
           <YouTube />
         </Fab>
         <Fab color="primary" aria-label="add" className={classes.twitterStyle}>
           <Twitter />
         </Fab>
-        <Fab color="primary" aria-label="add" className={classes.appleStyle}>
-          <Discord  className={classes.discordStyle} width="50%" fill="white" />
+        <Fab
+          color="primary"
+          aria-label="add"
+          className={classes.appleStyle}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          <img src={discordBtn ? Discord : WhiteDiscord} alt="discord"></img>
         </Fab>
       </Toolbar>
     </AppBar>

@@ -1,19 +1,20 @@
 import * as React from "react";
-import { useRef } from 'react'
+import { useRef } from "react";
 import { makeStyles, Button, Fab } from "@material-ui/core";
-import LandingImage from "../assets/landing.jpg";
+// import LandingImage from "../assets/landing.jpg";
+import Background from "../assets/background.png";
 import Path from "../assets/path.png";
 import Play from "../assets/play.png";
 
 const useStyles = makeStyles({
   boxStyle: {
     paddingLeft: "142px",
-    paddingTop: "120px",
+    paddingTop:'5px',
     textAlign: "left",
-    marginBottom: "180px",
     display: "flex",
     width: "100%",
     flexFlow: "row",
+    zIndex: "200",
   },
   spacer: {
     flex: "1 1 auto",
@@ -36,13 +37,13 @@ const useStyles = makeStyles({
     textAlign: "center",
   },
   computeLine: {
-    fontSize: "80px",
+    fontSize: "78px",
     textAlign: "left",
     color: "rgb(21, 204, 110)",
     fontWeight: "bold",
   },
   decideLine: {
-    fontSize: "80px",
+    fontSize: "78px",
     textAlign: "left",
     fontWeight: "bold",
     marginBottom: "70px",
@@ -60,7 +61,7 @@ const useStyles = makeStyles({
     marginLeft: "0px",
     height: "64px",
     width: "223px",
-    fontSize:'20px',
+    fontSize: "20px",
     "&:hover": {
       backgroundColor: "rgb(21, 204, 110)",
       color: "white",
@@ -110,16 +111,29 @@ const useStyles = makeStyles({
     float: "right",
     marginLeft: "10px",
     color: "rgb(60, 174, 250)",
-    position:'absolute',
-    zIndex:'100'
+    position: "absolute",
+    zIndex: "100",
   },
 });
-const play = (video) =>{
-  video.current.play()
-}
+
 const Landing = () => {
   const classes = useStyles();
+  const [playShow, setPlayShow] = React.useState(true)
+
   const videoRef = useRef();
+  const playRef = useRef();
+  const play = () => {
+    videoRef.current.play();
+    setPlayShow(!playShow);
+  };
+  const pause = () => {
+    videoRef.current.pause();
+    setPlayShow(!playShow);
+  };
+  const myCallback = () => {
+    videoRef.current.pause();
+    setPlayShow(!playShow);
+  };
   return (
     <>
       <div className={classes.boxStyle}>
@@ -135,30 +149,29 @@ const Landing = () => {
             Get Started
           </Button>
         </div>
-        <div className={classes.spacer}></div>
-        <div className="d-flex flex-wrap justify-content-end align-content-center">
-          <div>
-            <img
-              src={LandingImage}
-              alt="big"
-              width="100%"
-              className="image"
-            ></img>
-          </div>
-        </div>
+      </div>
+      <div className="image">
+        <img src={Background} alt="big" width="104%"></img>
       </div>
       <div className="container d-flex flex-wrap justify-content-center align-items-center">
         <div className={classes.simpleLine}>Refinance Made Simple</div>
-        <Fab color="primary" aria-label="add" className={classes.twitterStyle} onClick={()=>play(videoRef)}>
+        {playShow&&<Fab
+          color="primary"
+          aria-label="add"
+          className={classes.twitterStyle}
+          ref={playRef}
+          onClick={() => play()}
+        >
           <img src={Play} alt="play"></img>
-        </Fab>
+        </Fab>}
         <video
           id="video1"
           width="80%"
           src="https://www.w3schools.com/html/mov_bbb.mp4"
           className={classes.videoStyle}
           ref={videoRef}
-        ></video>
+          onClick={()=>pause()}
+          onEnded={() => myCallback()}></video>
       </div>
       <div className="container pt-5 mt-5 pb-5 mb-5">
         <div className="d-flex flex-wrap justify-content-center">
