@@ -9,7 +9,7 @@ import Play from "../assets/play.png";
 const useStyles = makeStyles({
   boxStyle: {
     paddingLeft: "142px",
-    paddingTop:'5px',
+    paddingTop: "5px",
     textAlign: "left",
     display: "flex",
     width: "100%",
@@ -118,7 +118,7 @@ const useStyles = makeStyles({
 
 const Landing = () => {
   const classes = useStyles();
-  const [playShow, setPlayShow] = React.useState(true)
+  const [playShow, setPlayShow] = React.useState(true);
 
   const videoRef = useRef();
   const playRef = useRef();
@@ -127,8 +127,10 @@ const Landing = () => {
     setPlayShow(!playShow);
   };
   const pause = () => {
-    videoRef.current.pause();
-    setPlayShow(!playShow);
+    if (!playShow) {
+      videoRef.current.pause();
+      setPlayShow(!playShow);
+    }
   };
   const myCallback = () => {
     videoRef.current.pause();
@@ -155,23 +157,26 @@ const Landing = () => {
       </div>
       <div className="container d-flex flex-wrap justify-content-center align-items-center">
         <div className={classes.simpleLine}>Refinance Made Simple</div>
-        {playShow&&<Fab
-          color="primary"
-          aria-label="add"
-          className={classes.twitterStyle}
-          ref={playRef}
-          onClick={() => play()}
-        >
-          <img src={Play} alt="play"></img>
-        </Fab>}
+        {playShow && (
+          <Fab
+            color="primary"
+            aria-label="add"
+            className={classes.twitterStyle}
+            ref={playRef}
+            onClick={() => play()}
+          >
+            <img src={Play} alt="play"></img>
+          </Fab>
+        )}
         <video
           id="video1"
           width="80%"
           src="https://www.w3schools.com/html/mov_bbb.mp4"
           className={classes.videoStyle}
           ref={videoRef}
-          onClick={()=>pause()}
-          onEnded={() => myCallback()}></video>
+          onClick={() => pause()}
+          onEnded={() => myCallback()}
+        ></video>
       </div>
       <div className="container pt-5 mt-5 pb-5 mb-5">
         <div className="d-flex flex-wrap justify-content-center">
