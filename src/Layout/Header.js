@@ -12,9 +12,11 @@ import {
   Fab,
   Link,
 } from "@material-ui/core";
-import Discord from "../assets/discord.png";
-import WhiteDiscord from "../assets/whiteDiscord.png";
-import { Twitter, YouTube } from "@material-ui/icons";
+import Discord from "../assets/images/discord.png";
+import WhiteDiscord from "../assets/images/whiteDiscord.png";
+import { Twitter, YouTube, Menu } from "@material-ui/icons";
+import Collapse from "@material-ui/core/Collapse";
+
 const navLinks = [
   { title: `Home`, path: `/home` },
   { title: `Refinance Calculator`, path: `/home` },
@@ -50,6 +52,9 @@ const useStyles = makeStyles({
     marginLeft: "40px",
     textAlign: "center",
     cursor: "pointer",
+    "@media (max-width: 992px)": {
+      display: "none",
+    },
   },
   twitterStyle: {
     backgroundColor: "white",
@@ -66,6 +71,9 @@ const useStyles = makeStyles({
     float: "right",
     marginLeft: "10px",
     color: "rgb(60, 174, 250)",
+    "@media (max-width: 992px)": {
+      display: "none",
+    },
   },
   youTubeStyle: {
     backgroundColor: "white",
@@ -82,6 +90,9 @@ const useStyles = makeStyles({
     float: "right",
     marginLeft: "10px",
     color: "red",
+    "@media (max-width: 992px)": {
+      display: "none",
+    },
   },
   appleStyle: {
     backgroundColor: "white",
@@ -98,6 +109,9 @@ const useStyles = makeStyles({
     float: "right",
     marginLeft: "10px",
     color: "rgb(106, 89, 255)",
+    "@media (max-width: 992px)": {
+      display: "none",
+    },
   },
   underLine: {
     width: "85%",
@@ -121,9 +135,16 @@ const Header = () => {
   const [count, setCount] = useState(0);
   const [discordBtn, setDiscordBtn] = React.useState(true);
   const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
+
+  const handleClick = () => {
+    setOpen(!open);
+  };
+  const selectedItem = () => {
+    setOpen(false);
+  };
   const linkClick = (index) => {
     setCount(index);
-    console.log(count);
   };
   const handleMouseEnter = () => {
     setDiscordBtn(false);
@@ -132,48 +153,82 @@ const Header = () => {
     setDiscordBtn(true);
   };
   return (
-    <AppBar position="static" className={classes.appBar}>
-      <Toolbar className={classes.toolBar}>
-        <IconButton edge="start" color="inherit" aria-label="home">
-          <img src={logo} className={classes.logo} alt="logo" />
-        </IconButton>
-        <List
-          component="nav"
-          aria-labelledby="main navigation"
-          className={classes.navDisplayFlex}
-        >
+    <>
+      <AppBar position="static" className={classes.appBar}>
+        <Toolbar className={classes.toolBar}>
+          <IconButton edge="start" color="inherit" aria-label="home">
+            <img src={logo} className={classes.logo} alt="logo" />
+          </IconButton>
+          <List
+            component="nav"
+            aria-labelledby="main navigation"
+            className={classes.navDisplayFlex}
+          >
+            {navLinks.map(({ title, path }, index) => (
+              <Link
+                // href={path}
+                key={title}
+                className={classes.linkText}
+                onClick={() => linkClick(index)}
+              >
+                <ListItem className={classes.linkText} button>
+                  <ListItemText primary={title}></ListItemText>
+                  {count === index && (
+                    <span className={classes.underLine}></span>
+                  )}
+                </ListItem>
+              </Link>
+            ))}
+          </List>
+          <div className={classes.spacer}></div>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="home"
+            className="phone-icon"
+            onClick={handleClick}
+          >
+            <Menu />
+          </IconButton>
+          <Fab
+            color="primary"
+            aria-label="add"
+            className={classes.youTubeStyle}
+          >
+            <YouTube />
+          </Fab>
+          <Fab
+            color="primary"
+            aria-label="add"
+            className={classes.twitterStyle}
+          >
+            <Twitter />
+          </Fab>
+          <Fab
+            color="primary"
+            aria-label="add"
+            className={classes.appleStyle}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <img src={discordBtn ? Discord : WhiteDiscord} alt="discord"></img>
+          </Fab>
+        </Toolbar>
+      </AppBar>
+      <Collapse in={open} timeout="auto" unmountOnExit className="phone">
+        <List component="div">
           {navLinks.map(({ title, path }, index) => (
-            <Link
-              // href={path}
-              key={title}
-              className={classes.linkText}
-              onClick={() => linkClick(index)}
+            <ListItem
+              button
+              style={{ paddingLeft: "20px", backgroundColor: "white" }}
+              onClick={selectedItem}
             >
-              <ListItem className={classes.linkText} button>
-                <ListItemText primary={title}></ListItemText>
-                {count === index && <span className={classes.underLine}></span>}
-              </ListItem>
-            </Link>
+              <ListItemText primary={title} />
+            </ListItem>
           ))}
         </List>
-        <div className={classes.spacer}></div>
-        <Fab color="primary" aria-label="add" className={classes.youTubeStyle}>
-          <YouTube />
-        </Fab>
-        <Fab color="primary" aria-label="add" className={classes.twitterStyle}>
-          <Twitter />
-        </Fab>
-        <Fab
-          color="primary"
-          aria-label="add"
-          className={classes.appleStyle}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <img src={discordBtn ? Discord : WhiteDiscord} alt="discord"></img>
-        </Fab>
-      </Toolbar>
-    </AppBar>
+      </Collapse>
+    </>
   );
 };
 export default Header;
