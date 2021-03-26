@@ -123,9 +123,11 @@ const useStyles = makeStyles({
     },
   },
   playStyle: {
-    width: "50%",
-    marginLeft: "5px",
-    marginTop: "3px",
+    "@media (max-width: 992px)": {
+      width: "50%",
+      marginLeft: "5px",
+      marginTop: "3px",
+    },
   },
   youTubeStyle: {
     backgroundColor: "white",
@@ -178,9 +180,7 @@ const Landing = () => {
   const [discordBtn, setDiscordBtn] = React.useState(true);
 
   const videoRef = useRef();
-  const videoRef1 = useRef();
   const playRef = useRef();
-  const playRef1 = useRef();
 
   const play = () => {
     videoRef.current.play();
@@ -194,20 +194,6 @@ const Landing = () => {
   };
   const myCallback = () => {
     videoRef.current.pause();
-    setPlayShow(!playShow);
-  };
-  const play1 = () => {
-    videoRef1.current.play();
-    setPlayShow(!playShow);
-  };
-  const pause1 = () => {
-    if (!playShow) {
-      videoRef1.current.pause();
-      setPlayShow(!playShow);
-    }
-  };
-  const myCallback1 = () => {
-    videoRef1.current.pause();
     setPlayShow(!playShow);
   };
   const handleMouseEnter = () => {
@@ -250,28 +236,54 @@ const Landing = () => {
           <br />
           right for you!
         </div>
-        <div className="container d-flex flex-wrap justify-content-center align-items-center">
-          {playShow && (
-            <Fab
-              color="primary"
-              aria-label="add"
-              className={classes.twitterStyle1}
-              ref={playRef1}
-              onClick={() => play1()}
-            >
-              <img src={Play} alt="play" className={classes.playStyle}></img>
-            </Fab>
-          )}
-          <video
-            id="video2"
-            width="80%"
-            src="https://www.w3schools.com/html/mov_bbb.mp4"
-            className={classes.videoStyle}
-            ref={videoRef1}
-            onClick={() => pause1()}
-            onEnded={() => myCallback1()}
-          ></video>
+      </div>
+      <div className="desktop">
+        <div className={classes.boxStyle}>
+          <div className="text-area row">
+            <div className="col-md-12">
+              <div className={classes.welcomeLine}>
+                Welcome To Sisyphus.Finance
+              </div>
+              <div className={classes.computeLine}>Compute & Compare loans</div>
+              <div className={classes.decideLine}>
+                Decide if refinancing is
+                <br />
+                right for you!
+              </div>
+              <Button variant="contained" className={classes.buttonStyle}>
+                Get Started
+              </Button>
+            </div>
+          </div>
         </div>
+        <div className="image">
+          <img src={Background} alt="big" width="100%"></img>
+        </div>
+        <div className={classes.simpleLine}>Refinance Made Simple</div>
+      </div>
+      <div className="container d-flex flex-wrap justify-content-center align-items-center">
+        {playShow && (
+          <Fab
+            color="primary"
+            aria-label="add"
+            className={classes.twitterStyle1}
+            ref={playRef}
+            onClick={() => play()}
+          >
+            <img src={Play} alt="play" className={classes.playStyle}></img>
+          </Fab>
+        )}
+        <video
+          id="video1"
+          width="80%"
+          src="https://www.w3schools.com/html/mov_bbb.mp4"
+          className={classes.videoStyle}
+          ref={videoRef}
+          onClick={() => pause()}
+          onEnded={() => myCallback()}
+        ></video>
+      </div>
+      <div className="phone">
         <div
           style={{
             fontSize: "30px",
@@ -279,6 +291,7 @@ const Landing = () => {
             marginBottom: "20px",
             fontWeight: "bold",
           }}
+          className="video-title"
         >
           Refinance Made Simple
         </div>
@@ -320,50 +333,6 @@ const Landing = () => {
         </div>
       </div>
       <div className="desktop">
-        <div className={classes.boxStyle}>
-          <div className="text-area row">
-            <div className="col-md-12">
-              <div className={classes.welcomeLine}>
-                Welcome To Sisyphus.Finance
-              </div>
-              <div className={classes.computeLine}>Compute & Compare loans</div>
-              <div className={classes.decideLine}>
-                Decide if refinancing is
-                <br />
-                right for you!
-              </div>
-              <Button variant="contained" className={classes.buttonStyle}>
-                Get Started
-              </Button>
-            </div>
-          </div>
-        </div>
-        <div className="image">
-          <img src={Background} alt="big" width="100%"></img>
-        </div>
-        <div className={classes.simpleLine}>Refinance Made Simple</div>
-        <div className="container d-flex flex-wrap justify-content-center align-items-center">
-          {playShow && (
-            <Fab
-              color="primary"
-              aria-label="add"
-              className={classes.twitterStyle1}
-              ref={playRef}
-              onClick={() => play()}
-            >
-              <img src={Play} alt="play"></img>
-            </Fab>
-          )}
-          <video
-            id="video1"
-            width="80%"
-            src="https://www.w3schools.com/html/mov_bbb.mp4"
-            className={classes.videoStyle}
-            ref={videoRef}
-            onClick={() => pause()}
-            onEnded={() => myCallback()}
-          ></video>
-        </div>
         <div className="container pt-5 mt-5 pb-5 mb-5">
           <div className="d-flex flex-wrap justify-content-center">
             <img src={Path} alt="path" width="85%"></img>

@@ -45,6 +45,7 @@
   .image{
     display: none !important;
   }
+  
 }
 
 @media (max-width: 992px) {
@@ -53,6 +54,16 @@
   }
   .phone-icon{
     display: block !important;
+  }
+  .video-title{
+    margin-top:15px !important;
+  }
+  .video-pos{
+    margin-top:-1740px;
+    margin-bottom:1570px;
+  }
+  .item:hover{
+    color: rgb(0, 170, 170);
   }
 }
 
@@ -76,5 +87,7 @@
   .phone-icon, .phone{
     display: none !important;
   }
-  
+  .video-title{
+    margin-top:0px;
+  }
 }

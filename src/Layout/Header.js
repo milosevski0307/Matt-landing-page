@@ -215,12 +215,13 @@ const Header = () => {
           </Fab>
         </Toolbar>
       </AppBar>
-      <Collapse in={open} timeout="auto" unmountOnExit className="phone">
+      <Collapse in={open} timeout="auto" unmountOnExit className="phone" style={{position:'relative', zIndex:300, width:'100%'}}>
         <List component="div">
           {navLinks.map(({ title, path }, index) => (
             <ListItem
               button
               style={{ paddingLeft: "20px", backgroundColor: "white" }}
+              className="item"
               onClick={selectedItem}
             >
               <ListItemText primary={title} />
