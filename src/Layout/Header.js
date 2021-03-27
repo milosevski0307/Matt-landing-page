@@ -10,18 +10,19 @@ import {
   ListItemText,
   makeStyles,
   Fab,
-  Link,
 } from "@material-ui/core";
 import Discord from "../assets/images/discord.png";
 import WhiteDiscord from "../assets/images/whiteDiscord.png";
 import { Twitter, YouTube, Menu } from "@material-ui/icons";
 import Collapse from "@material-ui/core/Collapse";
+import { Link } from "react-router-dom";
+
 
 const navLinks = [
-  { title: `Home`, path: `/home` },
-  { title: `Refinance Calculator`, path: `/home` },
-  { title: `Learn How it Works?`, path: `/home` },
-  { title: `Contact`, path: `/home` },
+  { title: `Home`, path: `/` },
+  { title: `Refinance Calculator`, path: `/finance` },
+  { title: `Learn How it Works?`, path: `/learn` },
+  { title: `Contact`, path: `/contact` },
 ];
 const useStyles = makeStyles({
   navDisplayFlex: {
@@ -166,7 +167,7 @@ const Header = () => {
           >
             {navLinks.map(({ title, path }, index) => (
               <Link
-                // href={path}
+                to={path}
                 key={title}
                 className={classes.linkText}
                 onClick={() => linkClick(index)}
@@ -180,6 +181,7 @@ const Header = () => {
               </Link>
             ))}
           </List>
+          
           <div className={classes.spacer}></div>
           <IconButton
             edge="start"
@@ -220,6 +222,7 @@ const Header = () => {
           {navLinks.map(({ title, path }, index) => (
             <ListItem
               button
+              key={index}
               style={{ paddingLeft: "20px", backgroundColor: "white" }}
               className="item"
               onClick={selectedItem}

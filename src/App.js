@@ -1,14 +1,11 @@
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Header from "./Layout/Header.js";
-import Landing from "./Pages/Landing.js";
-import Footer from "./Layout/Footer.js";
+import Routing from "./Routing";
+
 function App() {
   return (
     <div className="App">
-      <Header />
-      <Landing />
-      <Footer />
+      <Routing />
     </div>
   );
 }
