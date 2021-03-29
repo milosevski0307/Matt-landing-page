@@ -17,7 +17,6 @@ import { Twitter, YouTube, Menu } from "@material-ui/icons";
 import Collapse from "@material-ui/core/Collapse";
 import { Link } from "react-router-dom";
 
-
 const navLinks = [
   { title: `Home`, path: `/` },
   { title: `Refinance Calculator`, path: `/finance` },
@@ -141,8 +140,9 @@ const Header = () => {
   const handleClick = () => {
     setOpen(!open);
   };
-  const selectedItem = () => {
+  const selectedItem = (index) => {
     setOpen(false);
+    linkClick(index);
   };
   const linkClick = (index) => {
     setCount(index);
@@ -181,7 +181,7 @@ const Header = () => {
               </Link>
             ))}
           </List>
-          
+
           <div className={classes.spacer}></div>
           <IconButton
             edge="start"
@@ -217,18 +217,29 @@ const Header = () => {
           </Fab>
         </Toolbar>
       </AppBar>
-      <Collapse in={open} timeout="auto" unmountOnExit className="phone" style={{position:'relative', zIndex:300, width:'100%'}}>
+      <Collapse
+        in={open}
+        timeout="auto"
+        unmountOnExit
+        className="phone"
+        style={{ position: "relative", zIndex: 300, width: "100%" }}
+      >
         <List component="div">
           {navLinks.map(({ title, path }, index) => (
-            <ListItem
-              button
+            <Link
+              to={path}
               key={index}
-              style={{ paddingLeft: "20px", backgroundColor: "white" }}
-              className="item"
-              onClick={selectedItem}
+              style={{ textDecoration: "none", color: "black" }}
             >
-              <ListItemText primary={title} />
-            </ListItem>
+              <ListItem
+                button
+                style={{ paddingLeft: "20px", backgroundColor: "white" }}
+                className="item"
+                onClick={selectedItem}
+              >
+                <ListItemText primary={title} />
+              </ListItem>
+            </Link>
           ))}
         </List>
       </Collapse>
