@@ -5,6 +5,7 @@ import {
   FormControlLabel,
   Fab,
   Checkbox,
+  Button,
 } from "@material-ui/core";
 import { Add, Delete } from "@material-ui/icons";
 import * as React from "react";
@@ -96,20 +97,48 @@ const Finance = () => {
   const optionType = {
     selected: false,
     mortgageName: "",
-    loanAmount: "",
-    interestRate: "",
-    inflationRate: "",
-    taxRate: "",
-    years: "",
-    yearsTillSell: "",
-    cost: "",
-    returns: "",
+    loanAmount: "0",
+    interestRate: "0",
+    inflationRate: "0",
+    taxRate: "0",
+    years: "0",
+    yearsTillSell: "0",
+    cost: "0",
+    returnOnInvest: "0",
     assume: false,
+    payment: "0",
+    totalCost: "0",
+    yearsToEven: "0",
+    monthlySaving: "0",
+    totalSaving: "0",
   };
+  const currentMortgage = {
+    loanBalance: "",
+    currentMortgagePayment: "",
+    interestRate: "",
+    yearsTillSell: "",
+    numberOfPayments: "",
+    returnOnInvest: "",
+    assume: false,
+    mortgageCostPayment: "0",
+    currentMortgageTotalCost: "0",
+  };
+
   const [option, setOption] = React.useState([]);
+  const [current, setCurrent] = React.useState(currentMortgage);
+  const [count, setCount] = React.useState(1);
+
+  React.useEffect(() => {
+    calcOptions();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current]);
+
   const addOption = () => {
+    setCount((count) => count + 1);
     let temp = [...option];
-    setOption([optionType, ...temp]);
+    let temp1 = { ...optionType };
+    temp1.mortgageName = "Mortgage Name ( " + count + " )";
+    setOption([temp1, ...temp]);
   };
   const deleteOption = () => {
     setOption(option.filter((item) => item.selected === false));
@@ -126,7 +155,52 @@ const Finance = () => {
       )
     );
   };
+  const currentChange = (name, event, type) => {
+    setCurrent({
+      ...current,
+      [name]: type === 0 ? event.target.value : event.target.checked,
+    });
+  };
+  const calcCurrentMortgage = () => {
+    let temp = { ...current };
+    temp.mortgageCostPayment = (
+      current.currentMortgagePayment *
+      (1 - current.interestRate / 100)
+    ).toFixed(2);
+    temp.currentMortgageTotalCost = current.assume
+      ? (
+          temp.mortgageCostPayment * current.numberOfPayments +
+          current.yearsTillSell * (1 + current.returnOnInvest / 100)
+        ).toFixed(2)
+      : (temp.mortgageCostPayment * current.numberOfPayments).toFixed(2);
+    setCurrent(temp);
+  };
+  const calcOptions = () => {
+    let temp = [...option];
 
+    temp.map((item) => {
+      item.payment =
+        (item.loanAmount / (item.years * 12) +
+        ((item.interestRate / 100) * item.loanAmount) / 12).toFixed(2);
+
+      if (item.assume)
+        item.totalCost =
+          (item.payment * (item.years * 12) +
+          item.yearsTillSell * (1 + item.returnOnInvest / 100)).toFixed(2);
+      else
+        item.totalCost = (current.mortgageCostPayment * current.numberOfPayments).toFixed(2);
+      item.yearsToEven =
+        ((item.loanAmount / item.cost) * (1 + item.taxRate / 100)).toFixed(2);
+      item.monthlySaving = (current.mortgageCostPayment - item.payment).toFixed(2);
+      item.totalSaving = (current.currentMortgageTotalCost - item.totalCost).toFixed(2);
+      return item;
+    });
+    setOption(temp);
+  };
+  const calculation = () => {
+    calcCurrentMortgage();
+    calcOptions();
+  };
   return (
     <Grid
       container
@@ -144,23 +218,35 @@ const Finance = () => {
             </div>
             <Grid container spacing={6} className="pl-3 pr-3 pt-2">
               <Grid item xs={6}>
-                <TextField label="Loan Balance" className="w-100"></TextField>
+                <TextField
+                  label="Loan Balance"
+                  className="w-100"
+                  onChange={(event) => currentChange("loanBalance", event, 0)}
+                ></TextField>
               </Grid>
               <Grid item xs={6}>
                 <TextField
                   label="Payment(P&I Only)"
                   className="w-100"
+                  onChange={(event) =>
+                    currentChange("currentMortgagePayment", event, 0)
+                  }
                 ></TextField>
               </Grid>
             </Grid>
             <Grid container spacing={6} className="pl-3 pr-3">
               <Grid item xs={6}>
-                <TextField label="Interest Rate" className="w-100"></TextField>
+                <TextField
+                  label="Interest Rate"
+                  className="w-100"
+                  onChange={(event) => currentChange("interestRate", event, 0)}
+                ></TextField>
               </Grid>
               <Grid item xs={6}>
                 <TextField
                   label="Years Till Sell"
                   className="w-100"
+                  onChange={(event) => currentChange("yearsTillSell", event, 0)}
                 ></TextField>
               </Grid>
             </Grid>
@@ -169,6 +255,9 @@ const Finance = () => {
                 <TextField
                   label="Number of Payments Remaining on Loan"
                   className="w-100"
+                  onChange={(event) =>
+                    currentChange("numberOfPayments", event, 0)
+                  }
                 ></TextField>
               </Grid>
             </Grid>
@@ -177,6 +266,9 @@ const Finance = () => {
                 <TextField
                   label="%Return on Investment"
                   className="w-100"
+                  onChange={(event) =>
+                    currentChange("returnOnInvest", event, 0)
+                  }
                 ></TextField>
               </Grid>
             </Grid>
@@ -186,6 +278,7 @@ const Finance = () => {
               label="Assume closing cost would be invested"
               className="text-left pt-3 pb-2 pl-3"
               style={{ float: "left" }}
+              onChange={(event) => currentChange("assume", event, 1)}
             />
           </Card>
         </Grid>
@@ -328,9 +421,9 @@ const Finance = () => {
                     <TextField
                       label="%Return on Investment"
                       className="w-100"
-                      value={item.returns}
+                      value={item.returnOnInvest}
                       onChange={(event) =>
-                        optionChange(index, "returns", event, 0)
+                        optionChange(index, "returnOnInvest", event, 0)
                       }
                     ></TextField>
                   </Grid>
@@ -359,11 +452,19 @@ const Finance = () => {
       <Grid item lg={9} className="res-p-3 w-100">
         <Grid container item className="w-100 pt-3 pb-3">
           <h3>Mortgage Costs</h3>
+          <Button
+            variant="contained"
+            className="ml-auto mr-3"
+            color="primary"
+            onClick={() => calculation()}
+          >
+            Calculation
+          </Button>
         </Grid>
         <Grid item className="res-mt-5 w-100">
           <Card
             className=" res-mt-5 w-100 horizontal"
-            style={{ height: "347px", textAlign:'left'}}
+            style={{ height: "347px", textAlign: "left" }}
           >
             <div
               style={{
@@ -402,7 +503,10 @@ const Finance = () => {
                     style={{ fontSize: "16px", color: "rgb(0,0,0)" }}
                   >
                     <span>: </span>
-                    <span className="font-weight-bold"> $1894.30</span>
+                    <span className="font-weight-bold">
+                      {" "}
+                      $ {current.mortgageCostPayment}
+                    </span>
                   </div>
                 </Grid>
               </Grid>
@@ -427,286 +531,169 @@ const Finance = () => {
                     style={{ fontSize: "16px", color: "rgb(0,0,0)" }}
                   >
                     <span>: </span>
-                    <span className="font-weight-bold"> $549,433.23</span>
+                    <span className="font-weight-bold">
+                      {" "}
+                      $ {current.currentMortgageTotalCost}
+                    </span>
                   </div>
                 </Grid>
               </Grid>
             </div>
-            <div
-              style={{
-                borderRight: "1px rgb(220,220,220) solid",
-              }}
-              className="box"
-            >
-              <Grid container>
-                <div
-                  className="p-3 text-center font-weight-bold w-100"
-                  style={{
-                    fontSize: "20px",
-                    color: "rgb(25,118,210)",
-                    borderBottom: "1px rgb(220,220,220) solid",
-                  }}
-                >
-                  Mortgage Name (1)
-                </div>
-              </Grid>
-              <Grid container className="pl-3 pt-3">
-                <Grid item xs={6} className="text-left">
+            {option.map((item, index) => (
+              <div
+                style={{
+                  borderRight: "1px rgb(220,220,220) solid",
+                }}
+                className="box"
+                key={"mortgage" + index}
+              >
+                <Grid container>
                   <div
-                    className="text-left w-100"
+                    className="p-3 text-center font-weight-bold w-100"
                     style={{
-                      fontSize: "16px",
-                      color: "rgb(47,47,47)",
-                      fontWeight: "600",
+                      fontSize: "20px",
+                      color: "rgb(25,118,210)",
+                      borderBottom: "1px rgb(220,220,220) solid",
                     }}
                   >
-                    Payment
+                    {item.mortgageName}
                   </div>
                 </Grid>
-                <Grid item xs={6}>
-                  <div
-                    className="text-left w-100"
-                    style={{ fontSize: "16px", color: "rgb(0,0,0)" }}
-                  >
-                    <span>: </span>
-                    <span className="font-weight-bold"> $1894.30</span>
-                  </div>
+                <Grid container className="pl-3 pt-3">
+                  <Grid item xs={6} className="text-left">
+                    <div
+                      className="text-left w-100"
+                      style={{
+                        fontSize: "16px",
+                        color: "rgb(47,47,47)",
+                        fontWeight: "600",
+                      }}
+                    >
+                      Payment
+                    </div>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <div
+                      className="text-left w-100"
+                      style={{ fontSize: "16px", color: "rgb(0,0,0)" }}
+                    >
+                      <span>: </span>
+                      <span className="font-weight-bold">
+                        {" "}
+                        $ {item.payment}
+                      </span>
+                    </div>
+                  </Grid>
                 </Grid>
-              </Grid>
-              <Grid container className="pl-3 pt-3">
-                <Grid item xs={6} className="text-left">
-                  <div
-                    className="text-left w-100"
-                    style={{
-                      fontSize: "16px",
-                      color: "rgb(47,47,47)",
-                      fontWeight: "600",
-                    }}
-                  >
-                    Total cost adjusted
-                    <br />
-                    for tax & inflation
-                  </div>
+                <Grid container className="pl-3 pt-3">
+                  <Grid item xs={6} className="text-left">
+                    <div
+                      className="text-left w-100"
+                      style={{
+                        fontSize: "16px",
+                        color: "rgb(47,47,47)",
+                        fontWeight: "600",
+                      }}
+                    >
+                      Total cost adjusted
+                      <br />
+                      for tax & inflation
+                    </div>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <div
+                      className="text-left w-100"
+                      style={{ fontSize: "16px", color: "rgb(0,0,0)" }}
+                    >
+                      <span>: </span>
+                      <span className="font-weight-bold">
+                        {" "}
+                        $ {item.totalCost}
+                      </span>
+                    </div>
+                  </Grid>
                 </Grid>
-                <Grid item xs={6}>
-                  <div
-                    className="text-left w-100"
-                    style={{ fontSize: "16px", color: "rgb(0,0,0)" }}
-                  >
-                    <span>: </span>
-                    <span className="font-weight-bold"> $549,433.23</span>
-                  </div>
+                <Grid container className="pl-3 pt-3">
+                  <Grid item xs={6} className="text-left">
+                    <div
+                      className="text-left w-100"
+                      style={{
+                        fontSize: "16px",
+                        color: "rgb(47,47,47)",
+                        fontWeight: "600",
+                      }}
+                    >
+                      Years to break even
+                    </div>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <div
+                      className="text-left w-100"
+                      style={{ fontSize: "16px", color: "rgb(0,0,0)" }}
+                    >
+                      <span>: </span>
+                      <span className="font-weight-bold">
+                        {" "}
+                        {item.yearsToEven}
+                      </span>
+                    </div>
+                  </Grid>
                 </Grid>
-              </Grid>
-              <Grid container className="pl-3 pt-3">
-                <Grid item xs={6} className="text-left">
-                  <div
-                    className="text-left w-100"
-                    style={{
-                      fontSize: "16px",
-                      color: "rgb(47,47,47)",
-                      fontWeight: "600",
-                    }}
-                  >
-                    Years to break even
-                  </div>
+                <Grid container className="pl-3 pt-3">
+                  <Grid item xs={6} className="text-left">
+                    <div
+                      className="text-left w-100"
+                      style={{
+                        fontSize: "16px",
+                        color: "rgb(47,47,47)",
+                        fontWeight: "600",
+                      }}
+                    >
+                      Monthly savings
+                    </div>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <div
+                      className="text-left w-100"
+                      style={{ fontSize: "16px", color: "rgb(0,0,0)" }}
+                    >
+                      <span>: </span>
+                      <span className="font-weight-bold">
+                        {" "}
+                        $ {item.monthlySaving}/month
+                      </span>
+                    </div>
+                  </Grid>
                 </Grid>
-                <Grid item xs={6}>
-                  <div
-                    className="text-left w-100"
-                    style={{ fontSize: "16px", color: "rgb(0,0,0)" }}
-                  >
-                    <span>: </span>
-                    <span className="font-weight-bold"> 3.32</span>
-                  </div>
+                <Grid container className="pl-3 pt-3 pb-5">
+                  <Grid item xs={6} className="text-left">
+                    <div
+                      className="text-left w-100"
+                      style={{
+                        fontSize: "16px",
+                        color: "rgb(47,47,47)",
+                        fontWeight: "600",
+                      }}
+                    >
+                      Total monthly interest
+                      <br />& opportunity coat saved
+                    </div>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <div
+                      className="text-left w-100"
+                      style={{ fontSize: "16px", color: "rgb(0,0,0)" }}
+                    >
+                      <span>: </span>
+                      <span className="font-weight-bold">
+                        {" "}
+                        $ {item.totalSaving}
+                      </span>
+                    </div>
+                  </Grid>
                 </Grid>
-              </Grid>
-              <Grid container className="pl-3 pt-3">
-                <Grid item xs={6} className="text-left">
-                  <div
-                    className="text-left w-100"
-                    style={{
-                      fontSize: "16px",
-                      color: "rgb(47,47,47)",
-                      fontWeight: "600",
-                    }}
-                  >
-                    Monthly savings
-                  </div>
-                </Grid>
-                <Grid item xs={6}>
-                  <div
-                    className="text-left w-100"
-                    style={{ fontSize: "16px", color: "rgb(0,0,0)" }}
-                  >
-                    <span>: </span>
-                    <span className="font-weight-bold"> $220.59/month</span>
-                  </div>
-                </Grid>
-              </Grid>
-              <Grid container className="pl-3 pt-3 pb-5">
-                <Grid item xs={6} className="text-left">
-                  <div
-                    className="text-left w-100"
-                    style={{
-                      fontSize: "16px",
-                      color: "rgb(47,47,47)",
-                      fontWeight: "600",
-                    }}
-                  >
-                    Total monthly interest
-                    <br />& opportunity coat saved
-                  </div>
-                </Grid>
-                <Grid item xs={6}>
-                  <div
-                    className="text-left w-100"
-                    style={{ fontSize: "16px", color: "rgb(0,0,0)" }}
-                  >
-                    <span>: </span>
-                    <span className="font-weight-bold"> $18, 032</span>
-                  </div>
-                </Grid>
-              </Grid>
-            </div>
-            <div
-              style={{
-                borderRight: "1px rgb(220,220,220) solid",
-              }}
-              className="box"
-            >
-              <Grid container>
-                <div
-                  className="p-3 text-center font-weight-bold w-100"
-                  style={{
-                    fontSize: "20px",
-                    color: "rgb(25,118,210)",
-                    borderBottom: "1px rgb(220,220,220) solid",
-                  }}
-                >
-                  Mortgage Name (2)
-                </div>
-              </Grid>
-              <Grid container className="pl-3 pt-3">
-                <Grid item xs={6} className="text-left">
-                  <div
-                    className="text-left w-100"
-                    style={{
-                      fontSize: "16px",
-                      color: "rgb(47,47,47)",
-                      fontWeight: "600",
-                    }}
-                  >
-                    Payment
-                  </div>
-                </Grid>
-                <Grid item xs={6}>
-                  <div
-                    className="text-left w-100"
-                    style={{ fontSize: "16px", color: "rgb(0,0,0)" }}
-                  >
-                    <span>: </span>
-                    <span className="font-weight-bold"> $1894.30</span>
-                  </div>
-                </Grid>
-              </Grid>
-              <Grid container className="pl-3 pt-3">
-                <Grid item xs={6} className="text-left">
-                  <div
-                    className="text-left w-100"
-                    style={{
-                      fontSize: "16px",
-                      color: "rgb(47,47,47)",
-                      fontWeight: "600",
-                    }}
-                  >
-                    Total cost adjusted
-                    <br />
-                    for tax & inflation
-                  </div>
-                </Grid>
-                <Grid item xs={6}>
-                  <div
-                    className="text-left w-100"
-                    style={{ fontSize: "16px", color: "rgb(0,0,0)" }}
-                  >
-                    <span>: </span>
-                    <span className="font-weight-bold"> $549,433.23</span>
-                  </div>
-                </Grid>
-              </Grid>
-              <Grid container className="pl-3 pt-3">
-                <Grid item xs={6} className="text-left">
-                  <div
-                    className="text-left w-100"
-                    style={{
-                      fontSize: "16px",
-                      color: "rgb(47,47,47)",
-                      fontWeight: "600",
-                    }}
-                  >
-                    Years to break even
-                  </div>
-                </Grid>
-                <Grid item xs={6}>
-                  <div
-                    className="text-left w-100"
-                    style={{ fontSize: "16px", color: "rgb(0,0,0)" }}
-                  >
-                    <span>: </span>
-                    <span className="font-weight-bold"> 3.32</span>
-                  </div>
-                </Grid>
-              </Grid>
-              <Grid container className="pl-3 pt-3">
-                <Grid item xs={6} className="text-left">
-                  <div
-                    className="text-left w-100"
-                    style={{
-                      fontSize: "16px",
-                      color: "rgb(47,47,47)",
-                      fontWeight: "600",
-                    }}
-                  >
-                    Monthly savings
-                  </div>
-                </Grid>
-                <Grid item xs={6}>
-                  <div
-                    className="text-left w-100"
-                    style={{ fontSize: "16px", color: "rgb(0,0,0)" }}
-                  >
-                    <span>: </span>
-                    <span className="font-weight-bold"> $220.59/month</span>
-                  </div>
-                </Grid>
-              </Grid>
-              <Grid container className="pl-3 pt-3 pb-5">
-                <Grid item xs={6} className="text-left">
-                  <div
-                    className="text-left w-100"
-                    style={{
-                      fontSize: "16px",
-                      color: "rgb(47,47,47)",
-                      fontWeight: "600",
-                    }}
-                  >
-                    Total monthly interest
-                    <br />& opportunity coat saved
-                  </div>
-                </Grid>
-                <Grid item xs={6}>
-                  <div
-                    className="text-left w-100"
-                    style={{ fontSize: "16px", color: "rgb(0,0,0)" }}
-                  >
-                    <span>: </span>
-                    <span className="font-weight-bold"> $18, 032</span>
-                  </div>
-                </Grid>
-              </Grid>
-            </div>
-          
+              </div>
+            ))}
           </Card>
         </Grid>
         <Grid item className="mt-5 w-100">
@@ -730,19 +717,31 @@ const Finance = () => {
         <Grid item className="mt-5 w-100 text-left">
           <h4>Loan Balance</h4>
           <p>
-          Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. 
+            Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
+            commodo ligula eget dolor. Aenean massa. Cum sociis natoque. Lorem
+            ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo
+            ligula eget dolor. Aenean massa.
           </p>
           <h4>Interest Rate</h4>
           <p>
-          Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
+            Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
+            commodo ligula eget dolor. Aenean massa. Cum sociis natoque. Lorem
+            ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo
+            ligula eget dolor. Aenean massa.
           </p>
           <h4>Inflation Rate</h4>
           <p>
-          Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
+            Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
+            commodo ligula eget dolor. Aenean massa. Cum sociis natoque. Lorem
+            ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo
+            ligula eget dolor. Aenean massa.
           </p>
           <h4>Tax Rate</h4>
           <p>
-          Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.
+            Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
+            commodo ligula eget dolor. Aenean massa. Cum sociis natoque. Lorem
+            ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo
+            ligula eget dolor. Aenean massa.
           </p>
         </Grid>
       </Grid>
