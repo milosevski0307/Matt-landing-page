@@ -65,11 +65,16 @@ const Finance = () => {
   const [line, setLine] = React.useState(['current']);
   const [current, setCurrent] = React.useState(currentMortgage);
   const [count, setCount] = React.useState(1);
+  const [maximum, setMaximum] = React.useState(0);
 
   React.useEffect(() => {
     calcOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current]);
+  React.useEffect(() => {
+    calcOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const addOption = () => {
     setCount((count) => count + 1);
     let temp = [...option];
@@ -79,6 +84,7 @@ const Finance = () => {
   };
   const deleteOption = () => {
     setOption(option.filter((item) => item.selected === false));
+    setMaximum(0)
     setDataGraph([])
   };
   const optionChange = (index, name, event, type) => {
@@ -115,13 +121,15 @@ const Finance = () => {
   };
   const calcOptions = () => {
     let temp = [...option];
-    let max = 0;
+    let max = current.numberOfPayments;
+    let maximum = current.currentMortgagePayment* current.numberOfPayments;
     temp.map((item) => {
       if (item.years * 12 > max) max = item.years * 12;
       item.payment = (
         item.loanAmount / (item.years * 12) +
         ((item.interestRate / 100) * item.loanAmount) / 12
       ).toFixed(2);
+      if(maximum<item.years * 12*item.payment) maximum=item.years * 12*item.payment
 
       if (item.assume)
         item.totalCost = (
@@ -142,6 +150,8 @@ const Finance = () => {
       item.totalSaving = (
         current.currentMortgageTotalCost - item.totalCost
       ).toFixed(2);
+      setMaximum(maximum)
+
       return item;
     });
     setOption(temp);
@@ -150,6 +160,12 @@ const Finance = () => {
   };
   const generateData = (max) => {
     let data = [];
+    if(max===0){
+      option.map((item) => {
+        if (item.years * 12 > max) max = item.years * 12;
+        return item;
+      })
+    }
     for (let i = 0; i < max; i++) data.push({ X: i });
     for (let i = 0; i < current.numberOfPayments; i++) {
       data[i]={
@@ -681,7 +697,7 @@ const Finance = () => {
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="X" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} axisType={false} />
+                <YAxis axisLine={false} domain={['dataMin', Math.round(maximum)> current.currentMortgagePayment* current.numberOfPayments?Math.round(maximum):'dataMax']} allowDataOverflow={true}/>
                 <Tooltip />
                 {line.map((item, index)=>(
                   <Line type="monotone" dataKey={item} stroke={color[index%8]} key={index+item}/>
