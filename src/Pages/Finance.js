@@ -20,80 +20,6 @@ import {
 } from "recharts";
 
 const Finance = () => {
-  const data = [
-    {
-      name: "Jan",
-      uv: 4000,
-      pv: 2400,
-      amt: 2400,
-    },
-    {
-      name: "Feb",
-      uv: 3000,
-      pv: 1398,
-      amt: 2210,
-    },
-    {
-      name: "Mar",
-      uv: 2000,
-      pv: 9800,
-      amt: 2290,
-    },
-    {
-      name: "Apr",
-      uv: 2780,
-      pv: 3908,
-      amt: 2000,
-    },
-    {
-      name: "May",
-      uv: 1890,
-      pv: 4800,
-      amt: 2181,
-    },
-    {
-      name: "Jun",
-      uv: 2390,
-      pv: 3800,
-      amt: 2500,
-    },
-    {
-      name: "Jul",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-    {
-      name: "Aug",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-    {
-      name: "Sep",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-    {
-      name: "Oct",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-    {
-      name: "Nov",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-    {
-      name: "Dec",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-  ];
   const optionType = {
     selected: false,
     mortgageName: "",
@@ -125,14 +51,15 @@ const Finance = () => {
   };
 
   const [option, setOption] = React.useState([]);
+  const [dataGraph, setDataGraph] = React.useState([]);
+  const [line, setLine] = React.useState(['current']);
   const [current, setCurrent] = React.useState(currentMortgage);
   const [count, setCount] = React.useState(1);
 
   React.useEffect(() => {
     calcOptions();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current]);
-
   const addOption = () => {
     setCount((count) => count + 1);
     let temp = [...option];
@@ -142,6 +69,7 @@ const Finance = () => {
   };
   const deleteOption = () => {
     setOption(option.filter((item) => item.selected === false));
+    setDataGraph([])
   };
   const optionChange = (index, name, event, type) => {
     setOption(
@@ -177,25 +105,62 @@ const Finance = () => {
   };
   const calcOptions = () => {
     let temp = [...option];
-
+    let max = 0;
     temp.map((item) => {
-      item.payment =
-        (item.loanAmount / (item.years * 12) +
-        ((item.interestRate / 100) * item.loanAmount) / 12).toFixed(2);
+      if (item.years * 12 > max) max = item.years * 12;
+      item.payment = (
+        item.loanAmount / (item.years * 12) +
+        ((item.interestRate / 100) * item.loanAmount) / 12
+      ).toFixed(2);
 
       if (item.assume)
-        item.totalCost =
-          (item.payment * (item.years * 12) +
-          item.yearsTillSell * (1 + item.returnOnInvest / 100)).toFixed(2);
+        item.totalCost = (
+          item.payment * (item.years * 12) +
+          item.yearsTillSell * (1 + item.returnOnInvest / 100)
+        ).toFixed(2);
       else
-        item.totalCost = (current.mortgageCostPayment * current.numberOfPayments).toFixed(2);
-      item.yearsToEven =
-        ((item.loanAmount / item.cost) * (1 + item.taxRate / 100)).toFixed(2);
-      item.monthlySaving = (current.mortgageCostPayment - item.payment).toFixed(2);
-      item.totalSaving = (current.currentMortgageTotalCost - item.totalCost).toFixed(2);
+        item.totalCost = (
+          current.mortgageCostPayment * current.numberOfPayments
+        ).toFixed(2);
+      item.yearsToEven = (
+        (item.loanAmount / item.cost) *
+        (1 + item.taxRate / 100)
+      ).toFixed(2);
+      item.monthlySaving = (current.mortgageCostPayment - item.payment).toFixed(
+        2
+      );
+      item.totalSaving = (
+        current.currentMortgageTotalCost - item.totalCost
+      ).toFixed(2);
       return item;
     });
     setOption(temp);
+    setLine(['current'])
+    generateData(max)
+  };
+  const generateData = (max) => {
+    let data = [];
+    for (let i = 0; i < max; i++) data.push({ X: i });
+    for (let i = 0; i < current.numberOfPayments; i++) {
+      data[i]={
+        ...data[i],
+        current: current.currentMortgagePayment*i
+      }
+    }
+
+    let lineTemp =['current'];
+    option.map((item)=>{
+        lineTemp.push(item.mortgageName)
+      for (let i = 0; i < item.years*12; i++) {
+        data[i]={
+          ...data[i],
+          [item.mortgageName]: (item.payment*i).toFixed(2)
+        }
+      }
+      return item;
+    })
+    setLine(lineTemp)
+    setDataGraph(data)
   };
   const calculation = () => {
     calcCurrentMortgage();
@@ -701,15 +666,19 @@ const Finance = () => {
             <h3 className="pb-3">Mortgage Graph</h3>
             <ResponsiveContainer width="100%" aspect={25.0 / 9.0}>
               <LineChart
-                data={data}
+                data={dataGraph}
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                <XAxis dataKey="X" axisLine={false} tickLine={false} />
                 <YAxis axisLine={false} axisType={false} />
                 <Tooltip />
-                <Line type="monotone" dataKey="pv" stroke="#8884d8" />
-                <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+                {console.log(line)}
+                {line.map((item, index)=>(
+                  <Line type="monotone" dataKey={item} stroke="#8884d8" key={index+item}/>
+                ))}
+                {/* <Line type="monotone" dataKey="pv" stroke="#8884d8" />
+                <Line type="monotone" dataKey="uv" stroke="#82ca9d" /> */}
               </LineChart>
             </ResponsiveContainer>
           </Card>
