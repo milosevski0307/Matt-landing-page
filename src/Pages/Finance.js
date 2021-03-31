@@ -302,7 +302,7 @@ const Finance = () => {
               </div>
             </Grid>
           </Card>
-          <Grid container item style={{ overflow: "auto", height: "1030px" }}>
+          <Grid container item style={{ overflow: "auto", maxHeight: "1030px" }}>
             {option.map((item, index) => (
               <Card className="w-100" key={index}>
                 <Grid container spacing={6} className="pl-3 pr-3 pt-2">
