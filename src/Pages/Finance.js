@@ -20,6 +20,16 @@ import {
 } from "recharts";
 
 const Finance = () => {
+  const color =[
+    '#2ca25f',
+    '#8856a7',
+    '#636363',
+    '#43a2ca',
+    '#e34a33',
+    '#2b8cbe',
+    '#756bb1',
+    '#dd1c77',
+  ]
   const optionType = {
     selected: false,
     mortgageName: "",
@@ -673,12 +683,9 @@ const Finance = () => {
                 <XAxis dataKey="X" axisLine={false} tickLine={false} />
                 <YAxis axisLine={false} axisType={false} />
                 <Tooltip />
-                {console.log(line)}
                 {line.map((item, index)=>(
-                  <Line type="monotone" dataKey={item} stroke="#8884d8" key={index+item}/>
+                  <Line type="monotone" dataKey={item} stroke={color[index%8]} key={index+item}/>
                 ))}
-                {/* <Line type="monotone" dataKey="pv" stroke="#8884d8" />
-                <Line type="monotone" dataKey="uv" stroke="#82ca9d" /> */}
               </LineChart>
             </ResponsiveContainer>
           </Card>
